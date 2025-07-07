@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NewTime Clock</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #111;
+      color: #0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+    .clock {
+      font-size: 2rem;
+      margin: 10px;
+    }
+    .label {
+      font-size: 0.9rem;
+      opacity: 0.6;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 1rem;
+      color: #ccc;
+      max-width: 700px;
+      text-align: left;
+      line-height: 1.5;
+    }
+    strong {
+      color: #0f0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="clock">
+    <div class="label">🕓 Standard Time (UTC)</div>
+    <div id="normalClock">--:--:--</div>
+  </div>
+
+  <div class="clock">
+    <div class="label">🌀 NewTime</div>
+    <div id="newTimeClock">Cycle.00.00.00.00.000</div>
+  </div>
+
+  <div class="footer">
+    <p><strong>NewTime</strong> is a synthetic time system detached from Earth’s orbit, seasons, and politics.</p>
+    <p>It divides time into logical, repeatable units:</p>
+    <ul>
+      <li><strong>Cycle</strong> – like a year, consisting of 12 Phases.</li>
+      <li><strong>Phase</strong> – like a month, with 30 Frames.</li>
+      <li><strong>Frame</strong> – 6 Ticks, representing discrete logical intervals (like a week).</li>
+      <li><strong>Tick</strong> – the base "day" unit, made of 720 SubTicks.</li>
+      <li><strong>SubTick</strong> – a time quantum (~1.2 seconds), replacing the outdated "second".</li>
+    </ul>
+    <p>This system removes the need for leap years, time zones, or daylight savings.  
+    Time is no longer tied to the sky — it's computed, clean, and constant.  
+    Welcome to <strong>NewTime</strong>.</p>
+  </div>
+
+  <script>
+    // SETTINGS
+    let CYCLE_START = new Date("2025-07-07T00:00:00Z");
+    let SUBTICK_DURATION_MS = 1200;
+    let TICKS_PER_FRAME = 6;
+    let FRAMES_PER_PHASE = 30;
+    let PHASES_PER_CYCLE = 12;
+    let SUBTICKS_PER_TICK = 720;
+
+    // UPDATE CLOCKS
+    const updateNormalClock = () => {
+      let now = new Date();
+      document.getElementById("normalClock").textContent = now.toUTCString().slice(17, 25);
+    };
+
+    const updateNewTimeClock = () => {
+      let now = new Date();
+      let diff = now - CYCLE_START;
+      let totalSubTicks = Math.floor(diff / SUBTICK_DURATION_MS);
+
+      let tick = Math.floor(totalSubTicks / SUBTICKS_PER_TICK);
+      let subTick = totalSubTicks % SUBTICKS_PER_TICK;
+
+      let frame = Math.floor(tick / TICKS_PER_FRAME) % FRAMES_PER_PHASE;
+      let phase = Math.floor(tick / (TICKS_PER_FRAME * FRAMES_PER_PHASE)) % PHASES_PER_CYCLE;
+      let cycle = Math.floor(tick / (TICKS_PER_FRAME * FRAMES_PER_PHASE * PHASES_PER_CYCLE));
+      let tickInFrame = tick % TICKS_PER_FRAME;
+
+      let nt = `Cycle.${String(cycle).padStart(2, '0')}` +
+               `.${String(phase).padStart(2, '0')}` +
+               `.${String(frame).padStart(2, '0')}` +
+               `.${String(tickInFrame).padStart(2, '0')}` +
+               `.${String(subTick).padStart(3, '0')}`;
+
+      document.getElementById("newTimeClock").textContent = nt;
+    };
+
+    // INIT
+    setInterval(updateNormalClock, 1000);
+    setInterval(updateNewTimeClock, SUBTICK_DURATION_MS);
+    updateNormalClock();
+    updateNewTimeClock();
+  </script>
+
+</body>
+</html>
