@@ -56,6 +56,7 @@
   <div class="std-time">
     <span>🕓 Standard Time (UTC)</span><br/>
     <h1 id="utcTime">--:--:--</h1>
+    <div id="utcDate">--</div>
   </div>
 
   <div class="new-time">
@@ -63,63 +64,35 @@
     <h2 id="newTime">Cycle.00.00.00.00.000</h2>
   </div>
 
-  <!-- ⏱️ Описание концепции -->
   <div class="description">
-    <p><span class="highlight">NewTime</span> is a synthetic time system detached from Earth’s orbit, seasons, and politics.</p>
-    <p>It divides time into logical, repeatable units:</p>
+    <p><span class="highlight">NewTime</span> is an alternative time system starting at the dawn of our era: <code>0000-01-01T00:00:00Z</code>.</p>
+    <p>It redefines time as a modular structure, no longer bound to Earth’s orbit or solar days:</p>
     <ul>
-      <li><b>Cycle</b> – like a year, consisting of 12 Phases.</li>
-      <li><b>Phase</b> – like a month, with 30 Frames.</li>
-      <li><b>Frame</b> – 6 Ticks, representing discrete logical intervals (like a week).</li>
-      <li><b>Tick</b> – the base “day” unit, made of 720 SubTicks.</li>
-      <li><b>SubTick</b> – a time quantum (~1.2 seconds), replacing the outdated “second”.</li>
+      <li><b>Cycle</b> — synthetic "year", with 12 Phases</li>
+      <li><b>Phase</b> — like months, 30 Frames per Phase</li>
+      <li><b>Frame</b> — 6 Ticks per Frame</li>
+      <li><b>Tick</b> — synthetic "day", 720 SubTicks</li>
+      <li><b>SubTick</b> — ≈1.2 seconds (replacing the "second")</li>
     </ul>
-    <p>This system removes the need for leap years, time zones, or daylight savings. Time is no longer tied to the sky — it’s computed, clean, and constant. <b>Cycle.00</b> starts from <code>2025-07-07T00:00:00Z</code>.</p>
+    <p>No leap years. No daylight saving. No time zones. Only absolute, globally-synced logic.</p>
   </div>
 
-  <!-- 💠 Символическое пояснение -->
   <div class="symbolic">
     <h3>💠 <b>How to Read NewTime</b></h3>
-    <p><i>Imagine time not as the rising and setting of a star,<br/>but as a perfect machine, ticking in silence.</i></p>
-    <p>Each NewTime timestamp looks like:</p>
-    <p><code>Cycle.00.04.12.03.457</code></p>
-    <p>It means:</p>
+    <p><code>Cycle.34228.01.12.03.456</code> — time since Year 0:</p>
     <ul>
-      <li><b>Cycle</b> — the “year” of the system (starts at 00 on July 7, 2025).</li>
-      <li><b>Phase</b> — the “month”, 12 per cycle (04 = 5th phase).</li>
-      <li><b>Frame</b> — like a “week”, 30 per phase.</li>
-      <li><b>Tick</b> — a synthetic “day”, 6 per frame.</li>
-      <li><b>SubTick</b> — smallest visible unit (~1.2 sec), 720 per tick.</li>
+      <li><b>Cycle</b> — years since epoch (0000)</li>
+      <li><b>Phase</b> — month-alike block (12 per Cycle)</li>
+      <li><b>Frame</b> — subdivision (30 per Phase)</li>
+      <li><b>Tick</b> — synthetic "days" (6 per Frame)</li>
+      <li><b>SubTick</b> — ≈1.2s logical pulse (720 per Tick)</li>
     </ul>
-    <p>You’re not bound to seasons or daylight —<br/>
-    you’re reading time as <b>pure digital structure</b>, free from the Sun.</p>
+    <p><b>NewTime</b> offers structure without sky. A purely algorithmic calendar.</p>
   </div>
 
-  <!-- 🧭 Work Windows: Time Without Time Zones -->
-<div class="symbolic">
-  <h3>🧭 <b>Work Windows: Time Without Time Zones</b></h3>
-  <p>In <span class="highlight">NewTime</span>, there's no such thing as "local time". The entire system runs on one synchronized flow.</p>
-  <p>But humans still live by rhythms — we sleep, we wake, we work. That’s why we use <b>Work Windows</b>.</p>
-  
-  <p><b>Work Windows</b> are not time zones. They’re agreements. Flexible, programmable ranges of Ticks when activity is expected.</p>
-
-  <p>Example:</p>
-  <ul>
-    <li><code>Work Window: Tick 01–04</code> — a standard 4-tick active range per Frame (roughly 80% of a synthetic “day”).</li>
-    <li><code>Rest Window: Tick 05–00</code> — for downtime, sleep, recharge, or whatever your kind does.</li>
-  </ul>
-
-  <p>Cities, companies, even individuals can define their own windows. You don’t move the clock — you move your habits.</p>
-
-  <p>So while Berlin might start its day at Tick 02, and Tokyo at Tick 00 — they still speak the same time.</p>
-
-  <p>It’s time as code: one stream, infinite local interpretations. Pure coordination without confusion.</p>
-</div>
-
-
   <script>
-    const startTime = new Date('2025-07-07T00:00:00Z').getTime();
-    const subTickDuration = 1200; // 1.2 sec
+    const epochStart = new Date('0000-01-01T00:00:00Z').getTime();
+    const subTickDuration = 1200; // 1.2 seconds
     const tickSubTicks = 720;
     const frameTicks = 6;
     const phaseFrames = 30;
@@ -127,31 +100,27 @@
 
     const updateClocks = () => {
       const now = Date.now();
-      const utcNow = new Date(now).toISOString().substr(11, 8);
-      document.getElementById('utcTime').textContent = utcNow;
+      const nowDate = new Date(now);
+      const utcTime = nowDate.toISOString().substr(11, 8);
+      const utcDate = nowDate.toISOString().split('T')[0];
+      document.getElementById('utcTime').textContent = utcTime;
+      document.getElementById('utcDate').textContent = `📅 ${utcDate}`;
 
-      const diff = now - startTime;
+      const diff = now - epochStart;
       const subTicks = Math.floor(diff / subTickDuration);
-
       const ticks = Math.floor(subTicks / tickSubTicks);
       const tick = ticks % frameTicks;
-
       const frames = Math.floor(ticks / frameTicks);
       const frame = frames % phaseFrames;
-
       const phases = Math.floor(frames / phaseFrames);
       const phase = phases % cyclePhases;
-
       const cycle = Math.floor(phases / cyclePhases);
-
       const subTick = subTicks % tickSubTicks;
 
-      document.getElementById('newTime').textContent =
-        `Cycle.${cycle.toString().padStart(2, '0')}.` +
-        `${phase.toString().padStart(2, '0')}.` +
-        `${frame.toString().padStart(2, '0')}.` +
-        `${tick.toString().padStart(2, '0')}.` +
-        `${subTick.toString().padStart(3, '0')}`;
+      const pad = (n, len) => n.toString().padStart(len, '0');
+
+      const formatted = `Cycle.${pad(cycle, 5)}.${pad(phase,2)}.${pad(frame,2)}.${pad(tick,2)}.${pad(subTick,3)}`;
+      document.getElementById('newTime').textContent = formatted;
     };
 
     setInterval(updateClocks, 100);
